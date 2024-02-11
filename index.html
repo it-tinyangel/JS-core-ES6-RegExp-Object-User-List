@@ -4,9 +4,11 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-	<!-- <link rel="stylesheet" href="styles/style.css"> -->
+	<link rel="stylesheet"
+	 href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	 integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+	 crossorigin="anonymous">
+	<link rel="stylesheet" href="styles/style.css">
 	<title>User List</title>
 </head>
 
@@ -14,39 +16,38 @@
 
 	<main class="container mt-5 mt-lg-6">
 		<h2 class="fw-bold text-center">Add Users to User List</h2>
-		<div class="row d-flex flex-column justify-content-center align-items-center flex-md-row align-items-md-start">
+		<div class="row d-flex flex-column justify-content-center flex-md-row align-items-md-start">
 			<section class="col col-md-8 col-lg-5 col-xl-4 mt-4 mt-sm-3 mt-lg-4 mt-xl-5">
 				<h4 class="display-6 text-center">Sign In</h4>
-				<div class="mt-2 mt-md-4">
-					<form id="userSignInForm" class="form">
+				<div class="mt-2 mt-lg-4">
+					<form id="signInForm" class="form">
 						<div class="form-group my-3">
 							<label for="login" class="form-label"><span>Login</span></label>
-							<input type="text" class="form-control" id="login" placeholder="Enter login" autocomplete="username">
+							<input type="text" class="form-control" id="login" placeholder="Enter login" autocomplete="username" required>
 						</div>
 						<div class="form-group my-3">
 							<label for="password" class="form-label"><span>Password</span></label>
-							<input type="password" class="form-control" id="password" placeholder="Enter password"
-								autocomplete="current-password">
+							<input type="password" class="form-control" id="password" placeholder="Enter password" autocomplete="current-password" required>
 						</div>
 						<div class="form-group my-3">
 							<label for="email" class="form-label"><span>Email address</span></label>
-							<input type="email" class="form-control" id="email" placeholder="Enter email" autocomplete="email">
+							<input type="email" class="form-control" id="email" placeholder="Enter email" autocomplete="email" required>
 						</div>
 						<div class="d-flex flex-wrap flex-column justify-content-center align-content-center">
 							<button type="submit" class="btn btn-outline-success btn-add-user" id="addUserBtn">
 								<span>Add user</span>
 							</button>
-							<button type="button" class="btn btn-outline-success btn-edit-user invisible" id="editUserBtn">
+							<button type="button" class="btn btn-outline-success btn-edit-user" id="editUserBtn">
 								<span>Edit user</span>
 							</button>
 						</div>
 					</form>
 				</div>
 			</section>
-			<aside id="userList" class="col mt-4 mt-sm-3 mt-lg-4 mt-xl-5">
+			<aside class="col mt-4 mt-xl-5">
 				<h4 class="display-6 text-center">User List</h4>
-				<div class="mt-2 mt-md-4">
-					<table id="userListTable" class="table mt-3">
+				<div class="mt-2 mt-md-2">
+					<table class="table mt-3">
 						<thead>
 							<tr>
 								<th scope="col">#</th>
@@ -57,7 +58,7 @@
 								<th scope="col">Delete</th>
 							</tr>
 						</thead>
-						<tbody id="userListTableBody" class="table-body">
+						<tbody id="userList" class="table-body">
 						</tbody>
 					</table>
 				</div>
