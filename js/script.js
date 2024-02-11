@@ -1,41 +1,175 @@
 document.addEventListener('DOMContentLoaded', () => {
-	let counter = 0;
+	const signInForm = document.querySelector('#signInForm');
+	const userLogin = document.querySelector('#login');
+	const userPassword = document.querySelector('#password');
+	const userEmail = document.querySelector('#email');
+	const saveEditUserButton = document.querySelector('#editUserBtn');
+	const userList = document.querySelector('#userList');
 
-	document.querySelector('#userSignInForm').addEventListener('submit', function (event) {
+	class User {
+		constructor(login, password, email) {
+			this.login = login;
+			this.password = password;
+			this.email = email;
+		}
+	}
+
+	let users = [];
+	let userIndex = null;
+
+	const loginRegex = new RegExp('^[a-zA-Z]{4,16}$');
+	const passwordRegex = new RegExp('^[a-zA-Z0-9_.\-]{4,16}$');
+	const emailRegex = new RegExp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
+
+	function addUserEventListener() {
+		signInForm.addEventListener('submit', addUser);
+	}
+
+	function editUserEventListeners() {
+		saveEditUserButton.addEventListener('click', saveEditUser);
+
+		document.querySelectorAll('.btn-edit-list-user').forEach((button, index) => {
+			button.addEventListener('click', function () {
+				editUser(index);
+			});
+		});
+
+		document.querySelectorAll('.btn-delete-list-user').forEach((button, index) => {
+			button.addEventListener('click', function () {
+				deleteUser(index);
+			});
+		});
+	}
+
+	function getFormValues() {
+		const login = userLogin.value.trim();
+		const password = userPassword.value.trim();
+		const email = userEmail.value.trim();
+
+		return { login, password, email };
+	}
+
+	function validateForm(login, password, email) {
+		if (!loginRegex.test(login)) {
+			alert('Login must be an English word with 4 to 16 characters.');
+			return false;
+		}
+
+		if (!passwordRegex.test(password)) {
+			alert('Password must contain letters, digits, underscore (_), hyphen (-), or dot (.), with 4 to 16 characters.');
+			return false;
+		}
+
+		if (!emailRegex.test(email)) {
+			alert('Email must contain @ symbol and be a valid email address.');
+			return false;
+		}
+
+		return true;
+	}
+
+	function render() {
+		userList.innerHTML = '';
+
+		users.forEach((user, index) => {
+			let row = document.createElement('tr');
+			row.innerHTML = `
+					<th scope="row">${index + 1}</th>
+					<td>${user.login}</td>
+					<td>${user.password}</td>
+					<td>${user.email}</td>
+					<td><button type="button" class="btn btn-warning btn-edit-list-user"><span>Edit</span></button></td>
+					<td><button type="button" class="btn btn-danger btn-delete-list-user"><span>Delete</span></button></td>
+				`;
+			userList.appendChild(row);
+		});
+
+		editUserEventListeners();
+	}
+
+	function addUser(event) {
 		event.preventDefault();
 
-		counter++;
+		const { login, password, email } = getFormValues();
 
-		const login = document.querySelector('#login').value;
-		const password = document.querySelector('#password').value;
-		const email = document.querySelector('#email').value;
-
-		const newRow = document.createElement('tr');
-		newRow.innerHTML = `
-      <th scope="row">${counter}</th>
-      <td>${login}</td>
-      <td>${password}</td>
-      <td>${email}</td>
-			<td><button type="button" class="btn btn-warning btn-edit-userlist" id="editUserListBtn"><span>Edit</span></button></td>
-			<td><button type="button" class="btn btn-danger btn-delete-userlist" id="deleteUserListBtn"><span>Delete</span></button></td>
-    `;
-
-		document.querySelector('#userListTable').getElementsByTagName('tbody')[0].appendChild(newRow);
-
-		document.querySelector('#userSignInForm').reset();
-	});
-
-	document.querySelector('#userListTable').addEventListener('click', function (event) {
-		if (event.target.classList.contains('btn-edit-userlist')) {
-			const row = event.target.closest('tr');
-			const cells = row.querySelectorAll('td');
-
-			document.querySelector('#login').value = cells[0].textContent;
-			document.querySelector('#password').value = cells[1].textContent;
-			document.querySelector('#email').value = cells[2].textContent;
-		} else if (event.target.classList.contains('btn-delete-userlist')) {
-			event.target.closest('tr').remove();
-			counter--;
+		if (!validateForm(login, password, email)) {
+			return;
 		}
-	});
+
+		const newUser = new User(login, password, email);
+
+		users.push(newUser);
+
+		clearFormFields();
+
+		render();
+	}
+
+	function deleteUser(index) {
+		if (index >= 0 && index < users.length) {
+			users.splice(index, 1);
+		}
+
+		render();
+	}
+
+	function editUser(index) {
+		let user = users[index];
+
+		userLogin.value = user.login;
+		userPassword.value = user.password;
+		userEmail.value = user.email;
+		userIndex = index;
+
+		toggleButtonVisibility('#editUserBtn', true);
+		toggleButtonVisibility('#addUserBtn', false);
+	}
+
+	function saveEditUser(event) {
+		event.preventDefault();
+
+		const { login, password, email } = getFormValues();
+
+		if (!validateForm(login, password, email)) {
+			return;
+		}
+
+		const newUser = new User(login, password, email);
+
+		if (userIndex !== null && userIndex >= 0 && userIndex < users.length) {
+			users[userIndex] = newUser;
+		}
+
+		clearFormFields();
+
+		resetUserIndex();
+
+		toggleButtonVisibility('#editUserBtn', false);
+		toggleButtonVisibility('#addUserBtn', true);
+
+		render();
+	}
+
+	function clearFormFields() {
+		userLogin.value = '';
+		userPassword.value = '';
+		userEmail.value = '';
+	}
+
+	function resetUserIndex() {
+		userIndex = null;
+	}
+
+	function toggleButtonVisibility(buttonId, visible) {
+		const button = document.querySelector(buttonId);
+
+		button.style.display = visible ? 'block' : 'none';
+	}
+
+	function init() {
+		addUserEventListener();
+		editUserEventListeners();
+	}
+
+	init();
 });
