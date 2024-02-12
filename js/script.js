@@ -17,10 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	let users = [];
 	let userIndex = null;
 
-	const loginRegex = new RegExp('^[a-zA-Z]{4,16}$');
-	const passwordRegex = new RegExp('^[a-zA-Z0-9_.\-]{4,16}$');
-	const emailRegex = new RegExp('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
-
 	function addUserEventListener() {
 		signInForm.addEventListener('submit', addUser);
 	}
@@ -41,27 +37,46 @@ document.addEventListener('DOMContentLoaded', () => {
 		});
 	}
 
-	function getFormValues() {
-		const login = userLogin.value.trim();
-		const password = userPassword.value.trim();
-		const email = userEmail.value.trim();
+	function validateLogin(login) {
+		const regex = new RegExp('^[a-zA-Z]{4,16}$');
+		return regex.test(login);
+	}
 
-		return { login, password, email };
+	function validatePassword(password) {
+		const regex = new RegExp('^[a-zA-Z0-9_.\-]{4,16}$');
+		return regex.test(password);
+	}
+
+	function validateEmail(email) {
+		const regex = new RegExp('^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$');
+		return regex.test(email);
+	}
+
+	function validateEmails(emails) {
+		const emailArray = emails.split(/[ ,]+/);
+
+		for (let email of emailArray) {
+			if (!validateEmail(email.trim())) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	function validateForm(login, password, email) {
-		if (!loginRegex.test(login)) {
-			alert('Login must be an English word with 4 to 16 characters.');
+		if (!validateLogin(login)) {
+			alert('Invalid login. Login must be 4 to 16 characters long, containing only English letters.');
 			return false;
 		}
 
-		if (!passwordRegex.test(password)) {
-			alert('Password must contain letters, digits, underscore (_), hyphen (-), or dot (.), with 4 to 16 characters.');
+		if (!validatePassword(password)) {
+			alert('Invalid password. Password must be 4 to 16 characters long, containing letters, digits, underscores (_), dashes (-), and dots (.).');
 			return false;
 		}
 
-		if (!emailRegex.test(email)) {
-			alert('Email must contain @ symbol and be a valid email address.');
+		if (!validateEmails(email)) {
+			alert('Invalid email. Please, enter a valid email address.');
 			return false;
 		}
 
@@ -73,18 +88,42 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		users.forEach((user, index) => {
 			let row = document.createElement('tr');
+			
 			row.innerHTML = `
-					<th scope="row">${index + 1}</th>
-					<td>${user.login}</td>
-					<td>${user.password}</td>
-					<td>${user.email}</td>
-					<td><button type="button" class="btn btn-warning btn-edit-list-user"><span>Edit</span></button></td>
-					<td><button type="button" class="btn btn-danger btn-delete-list-user"><span>Delete</span></button></td>
-				`;
+							<th scope="row">${index + 1}</th>
+							<td>${user.login}</td>
+							<td>${user.password}</td>
+							<td>${user.email}</td>
+							<td><button type="button" class="btn btn-warning btn-edit-list-user"><span>Edit</span></button></td>
+							<td><button type="button" class="btn btn-danger btn-delete-list-user"><span>Delete</span></button></td>
+						`;
 			userList.appendChild(row);
 		});
 
 		editUserEventListeners();
+	}
+
+	function toggleButtonVisibility(buttonId, visible) {
+		const button = document.querySelector(buttonId);
+		button.style.display = visible ? 'block' : 'none';
+	}
+
+	function getFormValues() {
+		const login = userLogin.value.trim();
+		const password = userPassword.value.trim();
+		const email = userEmail.value.trim();
+
+		return { login, password, email };
+	}
+
+	function clearFormFields() {
+		userLogin.value = '';
+		userPassword.value = '';
+		userEmail.value = '';
+	}
+
+	function resetUserIndex() {
+		userIndex = null;
 	}
 
 	function addUser(event) {
@@ -92,17 +131,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		const { login, password, email } = getFormValues();
 
-		if (!validateForm(login, password, email)) {
+		if (validateForm(login, password, email)) {
+			const newUser = new User(login, password, email);
+
+			users.push(newUser);
+			clearFormFields();
+			render();
+		} else {
 			return;
 		}
-
-		const newUser = new User(login, password, email);
-
-		users.push(newUser);
-
-		clearFormFields();
-
-		render();
 	}
 
 	function deleteUser(index) {
@@ -130,40 +167,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		const { login, password, email } = getFormValues();
 
-		if (!validateForm(login, password, email)) {
+		if (validateForm(login, password, email)) {
+			const newUser = new User(login, password, email);
+
+			if (userIndex !== null && userIndex >= 0 && userIndex < users.length) {
+				users[userIndex] = newUser;
+			}
+
+			toggleButtonVisibility('#editUserBtn', false);
+			toggleButtonVisibility('#addUserBtn', true);
+
+			clearFormFields();
+			resetUserIndex();
+			render();
+		} else {
 			return;
 		}
-
-		const newUser = new User(login, password, email);
-
-		if (userIndex !== null && userIndex >= 0 && userIndex < users.length) {
-			users[userIndex] = newUser;
-		}
-
-		clearFormFields();
-
-		resetUserIndex();
-
-		toggleButtonVisibility('#editUserBtn', false);
-		toggleButtonVisibility('#addUserBtn', true);
-
-		render();
-	}
-
-	function clearFormFields() {
-		userLogin.value = '';
-		userPassword.value = '';
-		userEmail.value = '';
-	}
-
-	function resetUserIndex() {
-		userIndex = null;
-	}
-
-	function toggleButtonVisibility(buttonId, visible) {
-		const button = document.querySelector(buttonId);
-
-		button.style.display = visible ? 'block' : 'none';
 	}
 
 	function init() {
