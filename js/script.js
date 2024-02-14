@@ -91,11 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			row.innerHTML = `
 							<th scope="row">${index + 1}</th>
-							<td>${user.login}</td>
-							<td>${user.password}</td>
-							<td>${user.email}</td>
-							<td><button type="button" class="btn btn-warning btn-edit-list-user"><span>Edit</span></button></td>
-							<td><button type="button" class="btn btn-danger btn-delete-list-user"><span>Delete</span></button></td>
+							<td class="align-middle">${user.login}</td>
+							<td class="align-middle">${user.password}</td>
+							<td class="align-middle">${user.email}</td>
+							<td><button type="button" class="btn btn-warning btn-edit-list-user row"><span>Edit</span></button></td>
+							<td><button type="button" class="btn btn-danger btn-delete-list-user row"><span>Delete</span></button></td>
 						`;
 			userList.appendChild(row);
 		});
