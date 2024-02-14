@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		users.forEach((user, index) => {
 			let row = document.createElement('tr');
-			
+
 			row.innerHTML = `
 							<th scope="row">${index + 1}</th>
 							<td>${user.login}</td>
@@ -105,7 +105,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	function toggleButtonVisibility(buttonId, visible) {
 		const button = document.querySelector(buttonId);
-		button.style.display = visible ? 'block' : 'none';
+		if (visible) {
+			button.classList.remove('d-none');
+		} else {
+			button.classList.add('d-none');
+		}
 	}
 
 	function getFormValues() {
